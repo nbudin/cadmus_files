@@ -1,0 +1,48 @@
+<h1 class="mb-4">Files</h1>
+
+<% @cms_files.each_slice(4) do |slice| -%>
+  <div class="card-deck mb-4">
+    <% slice.each do |cms_file| -%>
+      <% file = cms_file.public_send(cms_file.class.cadmus_file_field) -%>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="float-right">
+            <%= link_to url_for(action: 'destroy', id: cms_file), class: 'btn btn-secondary px-2 py-1', method: 'DELETE', "data-confirm" => "Are you sure you want to delete #{cms_file.filename}?" do %>
+              <i class="fa fa-trash" aria-hidden="true"></i>
+            <% end -%>
+          </div>
+          <small style="font-weight: bold; word-wrap: break-word;">
+            <%= cms_file.filename %>
+          </small>
+        </div>
+        <div class="card-block text-center">
+          <%= link_to file.url do %>
+            <% if cms_file.is_image? -%>
+              <%= image_tag file.url, class: 'img-responsive', style: 'max-height: 100px; max-width: 100px;' %>
+            <% else -%>
+              <i class="fa fa-<%= icon_for_content_type(file.content_type) %>" style="font-size: 100px" aria-hidden="true"></i>
+            <% end -%>
+          <% end %>
+        </div>
+        <div class="card-footer text-right">
+          <small>
+            <%= number_to_human_size file.size %>
+          </small>
+        </div>
+      </div>
+    <% end -%>
+  </div>
+<% end -%>
+
+<div class="card">
+  <div class="card-header">Upload a file</div>
+  <div class="card-block">
+    <%= form_for :cms_file, url: url_for(action: 'create'), method: 'POST', multipart: true do |f| %>
+      <div class="form-group">
+        <%= f.file_field :file, class: 'form-control-file' %>
+      </div>
+      <%= f.submit "Upload", class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+</div>

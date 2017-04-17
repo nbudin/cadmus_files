@@ -2,6 +2,7 @@ require "cadmus_files/version"
 require "cadmus_files/engine"
 require "cadmus_files/file"
 require "cadmus_files/file_url_tag"
+require "cadmus_files/admin_controller"
 
 module CadmusFiles
   class << self
