@@ -7,17 +7,19 @@ module CadmusFiles
     end
 
     def index
-      @cms_files = cms_file_scope
+      @cms_files ||= cms_file_scope
       render template: 'cadmus/files/index'
     end
 
     def create
-      @cms_file = cms_file_scope.create!(cms_file_params)
+      @cms_file ||= cms_file_scope.new(cms_file_params)
+      @cms_file.save!
+
       redirect_to action: 'index'
     end
 
     def destroy
-      @cms_file = cms_file_scope.find(params[:id])
+      @cms_file ||= cms_file_scope.find(params[:id])
       @cms_file.destroy
 
       redirect_to action: 'index'
