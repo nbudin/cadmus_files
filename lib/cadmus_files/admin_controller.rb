@@ -1,6 +1,7 @@
 module CadmusFiles
   module AdminController
     extend ActiveSupport::Concern
+    include Cadmus::Concerns::ControllerWithParent
 
     included do
       helper 'cadmus_files/admin'
@@ -28,7 +29,7 @@ module CadmusFiles
     protected
 
     def cms_file_scope
-      CadmusFiles.file_model.all
+      @cms_file_scope = parent_model ? parent_model.cms_files : CadmusFiles.file_model.global
     end
 
     def cms_file_params

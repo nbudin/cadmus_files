@@ -1,6 +1,7 @@
 module CadmusFiles
   module File
     extend ActiveSupport::Concern
+    include Cadmus::Concerns::ModelWithParent
 
     module ClassMethods
       def cadmus_file(file_field = 'file')
@@ -9,7 +10,7 @@ module CadmusFiles
         end
         self.cadmus_file_field = file_field
 
-        belongs_to :parent, polymorphic: true
+        model_with_parent
 
         validates_integrity_of file_field
         validates_processing_of file_field
