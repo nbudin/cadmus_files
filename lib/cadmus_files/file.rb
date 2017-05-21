@@ -41,5 +41,3 @@ module CadmusFiles
     end
   end
 end
-
-ActiveRecord::Base.send :include, CadmusFiles::File

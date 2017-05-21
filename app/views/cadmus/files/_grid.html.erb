@@ -1,0 +1,7 @@
+<% cms_files.each_slice(4) do |slice| -%>
+  <div class="card-deck mb-4">
+    <% slice.each do |cms_file| -%>
+      <%= render partial: 'cadmus/files/file_card', locals: { cms_file: cms_file } %>
+    <% end -%>
+  </div>
+<% end -%>
