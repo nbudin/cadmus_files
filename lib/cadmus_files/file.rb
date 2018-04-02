@@ -33,7 +33,8 @@ module CadmusFiles
         define_method :validate_file_name_is_unique do
           the_filename = send(file_field).filename
 
-          if self.class.base_class.where(file_field => the_filename).any?
+          scope = parent ? self.class.base_class.where(parent: parent) : self.class.global
+          if scope.where(file_field => the_filename).any?
             errors.add file_field, "'#{the_filename}' already exists"
           end
         end
