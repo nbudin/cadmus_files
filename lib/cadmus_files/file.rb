@@ -1,6 +1,7 @@
 module CadmusFiles
   module File
     extend ActiveSupport::Concern
+    include Cadmus::Concerns::ModelWithParent
 
     module ClassMethods
       def cadmus_file(file_field = 'file')
@@ -9,7 +10,7 @@ module CadmusFiles
         end
         self.cadmus_file_field = file_field
 
-        belongs_to :parent, polymorphic: true
+        model_with_parent
 
         validates_integrity_of file_field
         validates_processing_of file_field
@@ -32,7 +33,8 @@ module CadmusFiles
         define_method :validate_file_name_is_unique do
           the_filename = send(file_field).filename
 
-          if self.class.base_class.where(file_field => the_filename).any?
+          scope = parent ? self.class.base_class.where(parent: parent) : self.class.global
+          if scope.where(file_field => the_filename).any?
             errors.add file_field, "'#{the_filename}' already exists"
           end
         end
@@ -40,5 +42,3 @@ module CadmusFiles
     end
   end
 end
-
-ActiveRecord::Base.send :include, CadmusFiles::File

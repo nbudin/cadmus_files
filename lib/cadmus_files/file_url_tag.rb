@@ -16,10 +16,14 @@ module CadmusFiles
         return "Error: CadmusFiles.file_model not set.  Please set it to your file model in an initializer."
       end
 
-      parent = context.registers['parent']
-      cms_file = file_model.find_by(file_model.cadmus_file_field => filename, parent: parent)
+      cache = context.registers[:cached_files] || {}
+      cms_file = cache[filename]
       unless cms_file
-        return "Error: file #{filename} not found"
+        parent = context.registers['parent']
+        cms_file = file_model.find_by(file_model.cadmus_file_field => filename, parent: parent)
+        unless cms_file
+          return "Error: file #{filename} not found"
+        end
       end
 
       cms_file.file.url
@@ -28,4 +32,3 @@ module CadmusFiles
 
   Liquid::Template.register_tag('file_url', FileUrlTag)
 end
-
