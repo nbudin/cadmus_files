@@ -12,8 +12,7 @@ module CadmusFiles
 
         model_with_parent
 
-        validates_integrity_of file_field
-        validates_processing_of file_field
+        has_one_attached :file
         validate :validate_file_name_is_unique
 
         define_method :to_param do
@@ -21,20 +20,30 @@ module CadmusFiles
         end
 
         define_method :filename do
-          ::File.basename(send(file_field).path)
+          ::File.basename(blob.filename)
         end
 
         define_method :is_image? do
-          send(file_field).content_type =~ /\Aimage\//
+          blob.content_type =~ /\Aimage\//
         end
 
         private
 
+        define_method :blob do
+          send(file_field).attachment&.blob
+        end
+
         define_method :validate_file_name_is_unique do
-          the_filename = send(file_field).filename
+          the_filename = blob.filename
 
           scope = parent ? self.class.base_class.where(parent: parent) : self.class.global
-          if scope.where(file_field => the_filename).any?
+          blob_scope = ActiveStorage::Blob.where(
+            id: ActiveStorage::Attachment.where(
+              record_id: scope.select(:id),
+              record_type: self.class.base_class.name
+            ).select(:blob_id)
+          )
+          if blob_scope.where(filename: the_filename).any?
             errors.add file_field, "'#{the_filename}' already exists"
           end
         end
